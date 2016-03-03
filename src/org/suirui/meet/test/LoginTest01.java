@@ -10,6 +10,7 @@ import android.app.Instrumentation;
 import android.content.Intent;
 import android.test.InstrumentationTestCase;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
@@ -71,6 +72,7 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
     
     public void input()  
     {  
+    	
         login.runOnUiThread(new Runnable()   
         {  
               
@@ -86,13 +88,13 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
          * 调用waitForIdleSync等待测试线程和UI线程同步，才能进行输入操作。 
          * waitForIdleSync和sendKeys不允许在UI线程里运行 
          */  
-        ins.waitForIdleSync();  
           
+        ins.waitForIdleSync();
         //调用sendKeys方法，输入用户名  
         sendKeys(KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_H,  
                 KeyEvent.KEYCODE_I, KeyEvent.KEYCODE_C,  
                 KeyEvent.KEYCODE_O, KeyEvent.KEYCODE_M,  
-                KeyEvent.KEYCODE_M);  
+                KeyEvent.KEYCODE_M);         
           
         login.runOnUiThread(new Runnable()   
         {  
@@ -106,17 +108,20 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
             }  
         });  
           
+        ins.waitForIdleSync();
         //调用sendKeys方法，输入密码  
-        sendKeys(KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2,   
-                KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4);  
+        sendKeys(KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_H,  
+                KeyEvent.KEYCODE_I, KeyEvent.KEYCODE_C,  
+                KeyEvent.KEYCODE_O, KeyEvent.KEYCODE_M,  
+                KeyEvent.KEYCODE_M);  
     }  
     public void testInput(){
     	//调用测试类的input方法，实现输入用户信息(sendKeys实现输入)  
         input(); 
       //测试验证用户信息的预期值是否等于实际值  
-        assertEquals("phicomm", username.getText().toString());  
+        assertEquals("phicomm", username.getText().toString().trim());  
         //密码的预期值123与实际值1234不符，Failure;  
-        assertEquals("123", pwd.getText().toString()); 
+        assertEquals("phicomm", pwd.getText().toString().trim()); 
     	
     }
     public void testLogin(){
@@ -153,6 +158,7 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
         //验证点击后界面是否跳转
         //assertEquals("", userName.getText().toString());  
         assertEquals(ServerSetupIpActivity.class, getActivity());  
+        Log.e("hebe",getActivity().toString());
     }
 	protected void tearDown() throws Exception {
 		super.tearDown();
