@@ -1,12 +1,14 @@
 package org.suirui.meet.test;
 
 import junit.framework.TestCase;
+
 import org.suirui.meet.ui.huijian.newui.LoginNewActivity;
 import org.suirui.meet.ui.huijian.newui.MeetNewEnterActivity;
 import org.suirui.meet.ui.huijian.newui.ServerSetupIpActivity;
 
 import junit.framework.TestCase;
 import android.app.Instrumentation;
+import android.app.Instrumentation.ActivityMonitor;
 import android.content.Intent;
 import android.test.InstrumentationTestCase;
 import android.test.ActivityInstrumentationTestCase2;
@@ -142,23 +144,23 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
     	
     }
     public void testSetIp(){
-    	input();  
-        ins.runOnMainSync(new Runnable()   
-        {  
-              
-            @Override  
-            public void run()   
-            {  
-                // TODO Auto-generated method stub  
-                setIp.requestFocus();  
-                //点击按钮  
-                setIp.performClick();  
-            }  
-        });  
-        //验证点击后界面是否跳转
-        //assertEquals("", userName.getText().toString());  
-        assertEquals(ServerSetupIpActivity.class, getActivity());  
-        Log.e("hebe",getActivity().toString());
+    	//跳转后的界面的Activity名为com.example.demo.OtherActivity
+        ActivityMonitor am = getInstrumentation().addMonitor(
+                "org.suirui.meet.ui.huijian.newui.ServerSetupIpActivity", null, false);
+
+        //点击操作运行在待测应用的线程中
+        login.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+            	setIp.requestFocus(); 
+                setIp.performClick();
+            }
+        });
+
+        //设定等待满足要求的活动创建成功，最多等待5s
+        am.waitForActivityWithTimeout(5000);
+        //活动创建成功，am.getHits()值为1，否则为0
+        assertEquals(1, am.getHits());
     }
 	protected void tearDown() throws Exception {
 		super.tearDown();
