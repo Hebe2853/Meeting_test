@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Intent;
+import android.os.Handler;
 import android.test.InstrumentationTestCase;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -56,7 +57,8 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
 		pwd = (EditText)login.findViewById(org.suirui.meet.R.id.user_pwd);
 		btLogin = (Button)login.findViewById(org.suirui.meet.R.id.login_btn);
 		setIp = (Button)login.findViewById(org.suirui.meet.R.id.right_btn);
-			
+//    	username.setText("1002");  
+//    	pwd.setText("123456");  
 	}
 
 	  //该测试用例实现在测试其他用例之前，测试确保获取的组件不为空  
@@ -93,10 +95,8 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
           
         ins.waitForIdleSync();
         //调用sendKeys方法，输入用户名  
-        sendKeys(KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_H,  
-                KeyEvent.KEYCODE_I, KeyEvent.KEYCODE_C,  
-                KeyEvent.KEYCODE_O, KeyEvent.KEYCODE_M,  
-                KeyEvent.KEYCODE_M);         
+        sendKeys(KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_0,  
+                KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_2);         
           
         login.runOnUiThread(new Runnable()   
         {  
@@ -112,56 +112,95 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
           
         ins.waitForIdleSync();
         //调用sendKeys方法，输入密码  
-        sendKeys(KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_H,  
-                KeyEvent.KEYCODE_I, KeyEvent.KEYCODE_C,  
-                KeyEvent.KEYCODE_O, KeyEvent.KEYCODE_M,  
-                KeyEvent.KEYCODE_M);  
+        sendKeys(KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2,  
+                KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4,  
+                KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_6);  
     }  
+ 
     public void testInput(){
     	//调用测试类的input方法，实现输入用户信息(sendKeys实现输入)  
         input(); 
       //测试验证用户信息的预期值是否等于实际值  
-        assertEquals("phicomm", username.getText().toString().trim());  
+        assertEquals("1002", username.getText().toString().trim());  
         //密码的预期值123与实际值1234不符，Failure;  
-        assertEquals("phicomm", pwd.getText().toString().trim()); 
+        assertEquals("123456", pwd.getText().toString().trim()); 
     	
     }
+    /*
+     * 由于UI线程负责事件的监听和绘图，因此，必须保证UI线程能够随时响应用户的需求，
+       UI线程里的操作应该向中断事件那样短小，费时的操作（如网络连接）需要另开线程，
+       否则，如果UI线程超过5s没有响应用户请求，会弹出对话框提醒用户终止应用程序（ANP）
+       此处直接login.runOnUiThread(new Runnable(){});会出现错误
+       Only the original thread that created a view hierarchy can touch its views
+      最后找到原因是因为username.setText()和pwd.setText()的问题，之前一直以为是runOnUiThread的问题
+      得出结论：不能在测试程序中使用setText等
+       */
     public void testLogin(){
-    	 input();  
-         //开新线程，并通过该线程在实现在UI线程上执行操作  
-         ins.runOnMainSync(new Runnable()   
-         {  
-               
-             @Override  
-             public void run()   
-             {  
-                 // TODO Auto-generated method stub  
-                 btLogin.requestFocus();  
-                 btLogin.performClick();  
-             }  
-         });  
-         assertEquals(MeetNewEnterActivity.class,getActivity());
     	
-    }
-    public void testSetIp(){
-    	//跳转后的界面的Activity名为com.example.demo.OtherActivity
-        ActivityMonitor am = getInstrumentation().addMonitor(
-                "org.suirui.meet.ui.huijian.newui.ServerSetupIpActivity", null, false);
+    	Instrumentation ins01;
+    	ins01 = getInstrumentation();
+        ActivityMonitor am = ins01.addMonitor(
+                "org.suirui.meet.ui.huijian.newui.MeetNewEnterActivity", null, false);
 
         //点击操作运行在待测应用的线程中
         login.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-            	setIp.requestFocus(); 
-                setIp.performClick();
+            	 btLogin.requestFocus();  
+                 btLogin.performClick();  
             }
         });
-
+        ins.waitForIdleSync();
         //设定等待满足要求的活动创建成功，最多等待5s
         am.waitForActivityWithTimeout(5000);
         //活动创建成功，am.getHits()值为1，否则为0
-        assertEquals(1, am.getHits());
+        assertEquals(1, am.getHits());    	
     }
+//	  public void testLogin(){
+//		//username.setText("1002");  
+//		//pwd.setText("123456"); 
+//    final Handler cwjHandler = new Handler();
+//		final Instrumentation ins01;
+//		ins01 = getInstrumentation();
+//	    final ActivityMonitor am = ins01.addMonitor(
+//	            "org.suirui.meet.ui.huijian.newui.MeetNewEnterActivity", null, false);
+//	    final Runnable clickLoginBt = new Runnable() {
+//	        public void run() {
+//	        	btLogin.requestFocus();  
+//	            btLogin.performClick();
+//	        	assertEquals(1, am.getHits());
+//	    	    ins01.removeMonitor(am);
+//	        }
+//	    };
+//	    try{
+//	    	login.runOnUiThread(clickLoginBt);
+//	    }
+//	    catch(Exception e){
+//	    	e.printStackTrace();	    	
+//	    }   	
+//	}
+//    public void testSetIp(){
+//    	//跳转后的界面的Activity名为com.example.demo.OtherActivity
+//    	Instrumentation ins01;
+//    	ins01 = getInstrumentation();
+//        ActivityMonitor am = ins01.addMonitor(
+//                "org.suirui.meet.ui.huijian.newui.ServerSetupIpActivity", null, false);
+//
+//        //点击操作运行在待测应用的线程中
+//        login.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//            	setIp.requestFocus(); 
+//                setIp.performClick();
+//            }
+//        });
+//
+//        //设定等待满足要求的活动创建成功，最多等待5s
+//        am.waitForActivityWithTimeout(5000);
+//        //活动创建成功，am.getHits()值为1，否则为0
+//        assertEquals(1, am.getHits());
+//        ins01.removeMonitor(am);
+//    }
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
