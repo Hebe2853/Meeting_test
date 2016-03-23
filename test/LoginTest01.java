@@ -44,12 +44,12 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		/*
-		Intent intent = new Intent();
-		intent.setClassName("org.suirui.meet.ui.huijian.newui", LoginNewActivity.class.getName());
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		login=(LoginNewActivity)getInstrumentation().startActivitySync(intent);
-		*/
+		
+//		Intent intent = new Intent();
+//		intent.setClassName("org.suirui.meet", LoginNewActivity.class.getName());
+//		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//		login=(LoginNewActivity)getInstrumentation().startActivitySync(intent);
+		
 		ins = getInstrumentation();
 		login = (LoginNewActivity) getActivity();
 		//获取相关组件
@@ -93,8 +93,9 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
          * waitForIdleSync和sendKeys不允许在UI线程里运行 
          */  
           
-        ins.waitForIdleSync();
+        //ins.waitForIdleSync();
         //调用sendKeys方法，输入用户名  
+        sendRepeatedKeys(4,KeyEvent.KEYCODE_FORWARD_DEL);
         sendKeys(KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_0,  
                 KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_2);         
           
@@ -110,17 +111,21 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
             }  
         });  
           
-        ins.waitForIdleSync();
+        //ins.waitForIdleSync();
         //调用sendKeys方法，输入密码  
+        sendRepeatedKeys(4,KeyEvent.KEYCODE_FORWARD_DEL);
         sendKeys(KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2,  
                 KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4,  
                 KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_6);  
+        Log.e("hebe","hebe:input is over");
     }  
  
     public void testInput(){
     	//调用测试类的input方法，实现输入用户信息(sendKeys实现输入)  
         input(); 
       //测试验证用户信息的预期值是否等于实际值  
+        assertTrue(btLogin.isClickable());
+        Log.e("hebe","hebe:"+btLogin.isClickable());
         assertEquals("1002", username.getText().toString().trim());  
         //密码的预期值123与实际值1234不符，Failure;  
         assertEquals("123456", pwd.getText().toString().trim()); 
@@ -135,7 +140,7 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
       最后找到原因是因为username.setText()和pwd.setText()的问题，之前一直以为是runOnUiThread的问题
       得出结论：不能在测试程序中使用setText等
        */
-    public void testLogin(){
+    public void testLogin() throws InterruptedException{
     	
     	Instrumentation ins01;
     	ins01 = getInstrumentation();
@@ -146,8 +151,10 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
         login.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+            	Log.e("hebe","hebe:begin to perform click loginbt");
             	 btLogin.requestFocus();  
                  btLogin.performClick();  
+               
             }
         });
         ins.waitForIdleSync();
@@ -156,29 +163,31 @@ public class LoginTest01 extends ActivityInstrumentationTestCase2 {
         //活动创建成功，am.getHits()值为1，否则为0
         assertEquals(1, am.getHits());    	
     }
-//	  public void testLogin(){
-//		//username.setText("1002");  
-//		//pwd.setText("123456"); 
-//    final Handler cwjHandler = new Handler();
-//		final Instrumentation ins01;
-//		ins01 = getInstrumentation();
-//	    final ActivityMonitor am = ins01.addMonitor(
-//	            "org.suirui.meet.ui.huijian.newui.MeetNewEnterActivity", null, false);
-//	    final Runnable clickLoginBt = new Runnable() {
-//	        public void run() {
-//	        	btLogin.requestFocus();  
-//	            btLogin.performClick();
-//	        	assertEquals(1, am.getHits());
-//	    	    ins01.removeMonitor(am);
-//	        }
-//	    };
-//	    try{
-//	    	login.runOnUiThread(clickLoginBt);
-//	    }
-//	    catch(Exception e){
-//	    	e.printStackTrace();	    	
-//	    }   	
-//	}
+    /*
+	  public void testLogin(){
+		//username.setText("1002");  
+		//pwd.setText("123456"); 
+		final Handler cwjHandler = new Handler();
+		final Instrumentation ins01;
+		ins01 = getInstrumentation();
+	    final ActivityMonitor am = ins01.addMonitor(
+	            "org.suirui.meet.ui.huijian.newui.MeetNewEnterActivity", null, false);
+	    final Runnable clickLoginBt = new Runnable() {
+	        public void run() {
+	        	btLogin.requestFocus();  
+	            btLogin.performClick();
+	        	assertEquals(1, am.getHits());
+	    	    ins01.removeMonitor(am);
+	        }
+	    };
+	    try{
+	    	login.runOnUiThread(clickLoginBt);
+	    }
+	    catch(Exception e){
+	    	e.printStackTrace();	    	
+	    }   	
+	}
+	*/
 //    public void testSetIp(){
 //    	//跳转后的界面的Activity名为com.example.demo.OtherActivity
 //    	Instrumentation ins01;

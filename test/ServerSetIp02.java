@@ -30,7 +30,7 @@ public class ServerSetIp02 extends ActivityInstrumentationTestCase2 {
 	}
 	
 	public void testSaveIp(){	
-		Log.e("hebe", "test save started");
+		Log.e("hebe", "hebe:test save started");
 		ActivityMonitor am = getInstrumentation().addMonitor(
                 "org.suirui.meet.ui.huijian.newui.LoginNewActivity", null, false);
 		serverSetIp.runOnUiThread(new Runnable()   

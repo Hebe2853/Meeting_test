@@ -81,25 +81,25 @@ public class ServerSetIp01 extends ActivityInstrumentationTestCase2{
 	public void testInputIp() {
 		input();
 		assertEquals("192.168.63.18",ip.getText().toString().trim());
-		Log.e("hebe", "test input finished");
+		Log.e("hebe", "hebe:test input finished"+ip.getText().toString());
 	}
-//	public void testSaveIp(){	
-//		Log.e("hebe", "test save started");
-//		ActivityMonitor am = getInstrumentation().addMonitor(
-//                "org.suirui.meet.ui.huijian.newui¡£LoginNewActivity", null, false);
-//		ins.runOnMainSync(new Runnable()   
-//        {  
-//              
-//            @Override  
-//            public void run()   
-//            {  
-//                save.requestFocus();  
-//                save.performClick();  
-//            }  
-//        }); 
-//		am.waitForActivityWithTimeout(5000);
-//		assertEquals(1, am.getHits());	
-//	}
+	public void testSaveIp(){	
+		Log.e("hebe", "test save started");
+		ActivityMonitor am = getInstrumentation().addMonitor(
+                "org.suirui.meet.ui.huijian.newui¡£LoginNewActivity", null, false);
+		ins.runOnMainSync(new Runnable()   
+        {  
+              
+            @Override  
+            public void run()   
+            {  
+                save.requestFocus();  
+                save.performClick();  
+            }  
+        }); 
+		am.waitForActivityWithTimeout(5000);
+		assertEquals(1, am.getHits());	
+	}
 	public void tearDown() throws Exception {
 		super.tearDown();
 	}
